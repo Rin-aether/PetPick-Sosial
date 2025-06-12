@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { auth } from "../lib/firebase";
 import {
   signInWithPopup,
@@ -8,6 +8,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 export const LoginPage: FC = () => {
   // 状態を管理する変数たち（React Hooks）
@@ -15,6 +17,15 @@ export const LoginPage: FC = () => {
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true); // true=ログイン / false=新規登録
   const [error, setError] = useState("");
+
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/profile"); // ログイン済みならリダイレクト
+    }
+  }, [user, navigate]);
 
   // メール＋パスワードでログイン or 登録
   const handleSubmit = async (e: React.FormEvent) => {
